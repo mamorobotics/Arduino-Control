@@ -7,8 +7,12 @@
 const int RS_RO = 10;
 const int RS_DI = 11;
 const int RS_DE_RE = 12;
+const int String_Count = 16;
 
-String data[16];
+String data[String_Count];
+
+String msg = "";
+bool inMsg = false;
 
 SoftwareSerial RS_SLAVE(RS_RO, RS_DI); //RX, TX
 
@@ -24,11 +28,25 @@ void setup() {
 
 void loop() {
   if(RS_SLAVE.available()){
-    Serial.println(RS_SLAVE.read());
-    //splitString((String)RS_SLAVE.read(), '!', data);
-    // for (int i = 0; i < 16; i++) {
-    //   Serial.println(*ata[i]);
-    // }
+    char c = RS_SLAVE.read();
+    if(c == '<'){
+      inMsg = true; 
+    } else if(c == '>'){
+      //Serial.println(msg);
+      splitString(msg, '!', data);
+      Serial.print("[");
+      for (int i = 0; i < String_Count; i++) {
+        Serial.print(data[i]);
+        if(i!=String_Count-1){
+          Serial.print(", ");
+        }
+      }
+      Serial.println("]");
+      msg = "";
+      inMsg = false;
+    } else if(inMsg){
+      msg+=c;
+    }
   }
 }
 
@@ -37,7 +55,7 @@ void splitString(String str, char delimiter, String *result) {
   int endIndex = 0;
   int partIndex = 0;
 
-  while (endIndex >= 0 && partIndex < 3) {
+  while (endIndex >= 0 && partIndex < String_Count) {
     endIndex = str.indexOf(delimiter, startIndex);
     
     if (endIndex == -1) {  // If no more delimiters, grab the rest of the string
