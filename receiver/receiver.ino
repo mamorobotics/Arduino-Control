@@ -32,6 +32,9 @@ bool DpadY = false;
 bool DpadX = false;
 
 void setup() {
+  //https://learn.adafruit.com/16-channel-pwm-servo-driver/hooking-it-up
+  pwm.setPWMFreq(400);
+
   Serial.begin(9600);
   RS_SLAVE.begin(9600);
   pinMode(RS_DE_RE, OUTPUT);
@@ -123,4 +126,18 @@ void splitString(String str, char delimiter, String *result) {
     
     partIndex++;
   }
+}
+
+void setServoPos(float speed, int channel) {
+  float normalizedPos = (speed + 1.0) / 2.0;
+  float percent = (normalizedPos + 0.40) * 0.80;
+  int ticks = (int)(percent * 4095);
+  pwm.setPWM(channel, ticks, 4095-ticks);
+}
+
+void setMotorSpeed(float speed, int channel) {
+  float normalizedSpeed = (speed + 1.0) / 2.0;
+  float percent = (normalizedSpeed + 0.44) * 0.76;
+  int ticks = (int)(percent * 4095);
+  pwm.setPWM(channel, ticks, 4095-ticks);
 }
