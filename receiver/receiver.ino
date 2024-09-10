@@ -16,6 +16,21 @@ bool inMsg = false;
 
 SoftwareSerial RS_SLAVE(RS_RO, RS_DI); //RX, TX
 
+float LeftJoystickY = 0.0;
+float LeftJoystickX = 0.0;
+float RightJoystickY = 0.0;
+float RightJoystickX = 0.0;
+float LeftTrigger = 0.0;
+float RightTrigger = 0.0;
+bool LeftBumper = false;
+bool RightBumper = false;
+bool A = false;
+bool X = false;
+bool Y = false;
+bool B = false;
+bool DpadY = false;
+bool DpadX = false;
+
 void setup() {
   Serial.begin(9600);
   RS_SLAVE.begin(9600);
@@ -40,6 +55,8 @@ void loop() {
         if(i!=String_Count-1){
           Serial.print(", ");
         }
+        assignValues();
+        setServosAndMotors();
       }
       Serial.println("]");
       msg = "";
@@ -48,6 +65,45 @@ void loop() {
       msg+=c;
     }
   }
+}
+
+void assignValues(){
+  LeftJoystickX = (data[0].toInt()/1000);
+  LeftJoystickY = (data[1].toInt()/1000);
+  RightJoystickX = (data[2].toInt()/1000);
+  RightJoystickY = (data[3].toInt()/1000);
+  LeftTrigger = (data[4].toInt()/100);
+  RightTrigger = (data[5].toInt()/100);
+
+  if((sizeof(data) / sizeof(data[0])>6)){
+    for (int i = 6; i < (sizeof(data) / sizeof(data[0])); i++) {
+      if(data[i]=="a"){
+        A = true;
+      } else if(data[i]=="b"){
+        B = true;
+      } else if(data[i]=="x"){
+        X = true;
+      } else if(data[i]=="y"){
+        Y = true;
+      } else if(data[i]=="j"){
+        LeftBumber = true;
+      } else if(data[i]=="k"){
+        RightBumber = true;
+      } else if(data[i]=="u"){
+        Up = true;
+      } else if(data[i]=="d"){
+        Down = true;
+      } else if(data[i]=="l"){
+        Left = true;
+      } else if(data[i]=="r"){
+        Right = true;
+      }
+    }
+  }
+}
+
+void setServosAndMotors(){
+
 }
 
 void splitString(String str, char delimiter, String *result) {
