@@ -129,15 +129,11 @@ void splitString(String str, char delimiter, String *result) {
 }
 
 void setServoPos(float speed, int channel) {
-  float normalizedPos = (speed + 1.0) / 2.0;
-  float percent = (normalizedPos + 0.40) * 0.80;
-  int ticks = (int)(percent * 4095);
+  int ticks = map(speed, -1, 1, 1638, 3276);
   pwm.setPWM(channel, ticks, 4095-ticks);
 }
 
 void setMotorSpeed(float speed, int channel) {
-  float normalizedSpeed = (speed + 1.0) / 2.0;
-  float percent = (normalizedSpeed + 0.44) * 0.76;
-  int ticks = (int)(percent * 4095);
+  int ticks = map(speed, -1, 1, 1802, 3112);
   pwm.setPWM(channel, ticks, 4095-ticks);
 }
