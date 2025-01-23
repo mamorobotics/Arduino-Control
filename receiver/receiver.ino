@@ -47,7 +47,13 @@ void setup() {
   up_left.attach(6);
   up_right.attach(9);
 
+  foward_left.write(0);
+  foward_right.write(0);
+  up_left.write(0);
+  up_right.write(0);
+
   Serial.begin(9600);
+  Serial.println("BOOT");
   RS_SLAVE.begin(9600);
   pinMode(RS_DE_RE, OUTPUT);
   digitalWrite(RS_DE_RE, LOW);
@@ -62,7 +68,7 @@ void loop() {
     if(c == '<'){
       inMsg = true; 
     } else if(c == '>'){
-      //Serial.println(msg);
+      Serial.println(msg);
       splitString(msg, '!', data);
       // Serial.print("[");
       // for (int i = 0; i < String_Count; i++) {
