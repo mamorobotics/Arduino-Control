@@ -47,7 +47,7 @@ int serMaxPWM = 430;
 
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
-#define SERVO_FREQ 50  // Analog servos run at ~50 Hz
+#define SERVO_FREQ 400 //50  // Analog servos run at ~50 Hz
 
 void setup() {
   Serial.begin(9600);
@@ -60,7 +60,7 @@ void setup() {
   Serial.println("READY");
 
   pwm.begin();
-  pwm.setOscillatorFrequency(27000000);  // Set the PWM frequency
+  // pwm.setOscillatorFrequency(27000000);  // Set the PWM frequency
   pwm.setPWMFreq(SERVO_FREQ);
 
   setServosToZero();
@@ -89,16 +89,17 @@ void loop() {
     } else if (inMsg) {
       msg += c;
     }
+    
   }
 }
 
 void assignValues() {
-  LeftJoystickX = (data[0].toInt() / 1000.0);
-  LeftJoystickY = (data[1].toInt() / 1000.0);
-  RightJoystickX = (data[2].toInt() / 1000.0);
-  RightJoystickY = (data[3].toInt() / 1000.0);
-  LeftTrigger = (data[4].toInt() / 100.0);
-  RightTrigger = (data[5].toInt() / 100.0);
+  LeftJoystickX = (data[0].toFloat() / 1000.0);
+  LeftJoystickY = (data[1].toFloat() / 1000.0);
+  RightJoystickX = (data[2].toFloat() / 1000.0);
+  RightJoystickY = (data[3].toFloat() / 1000.0);
+  LeftTrigger = (data[4].toFloat() / 100.0);
+  RightTrigger = (data[5].toFloat() / 100.0);
 
   resetButtonBools();
 
@@ -143,17 +144,20 @@ void resetButtonBools() {
 }
 
 void setServosAndMotors() {
-  double denom = max(abs(LeftJoystickY) + abs(LeftJoystickX), 1);
-  int fl = abs((LeftJoystickY + LeftJoystickX) / denom) * 90;
-  int fr = abs((LeftJoystickY - LeftJoystickX) / denom) * 90;
-  int ul = abs(RightJoystickY) * 90;
-  int ur = abs(RightJoystickY) * 90;
+  float fl = constrain((LeftJoystickY + LeftJoystickX), -1.0, 1.0);
+  float fr = constrain((LeftJoystickY - LeftJoystickX), -1.0, 1.0);
+  float ul = RightJoystickY;
+  float ur = RightJoystickY;
+  //fl=1.0;
 
-  pwm.setPWM(0, 0, positionToPulseServo(ur / 90.0));
-  pwm.setPWM(1, 0, positionToPulseServo(ur / 90.0));
-  pwm.setPWM(2, 0, positionToPulseServo(ul / 90.0));
-  pwm.setPWM(3, 0, positionToPulseServo(fr / 90.0));
-  pwm.setPWM(4, 0, positionToPulseServo(fl / 90.0));
+  // positionToPulseMotor(ur);
+  // positionToPulseMotor(ul);
+  // positionToPulseMotor(fr);
+  // positionToPulseMotor(fl);
+  pwm.writeMicroseconds(0, positionToPulseMotor(fl));
+  pwm.writeMicroseconds(1, positionToPulseMotor(ur));
+  pwm.writeMicroseconds(2, positionToPulseMotor(ul));
+  pwm.writeMicroseconds(3, positionToPulseMotor(fr));
 }
 
 void splitString(String str, char delimiter, String *result) {
@@ -182,15 +186,18 @@ uint16_t positionToPulseServo(float position) {
 
 uint16_t positionToPulseMotor(float position) {
   position = constrain(position, -1.0, 1.0);
+  Serial.print(position);
+  Serial.print(" ");
   float normalized = (position + 1.0) / 2.0;
-  return motMinPWM + (uint16_t)(normalized * (motMaxPWM - motMinPWM));
+  uint16_t micro = motMinPWM + (uint16_t)(normalized * (motMaxPWM - motMinPWM));
+  Serial.println(micro);
+  return micro;
 }
 
 void setServosToZero() {
-  pwm.setPWM(0, 0, positionToPulseServo(0));
-  pwm.setPWM(1, 0, positionToPulseServo(0));
-  pwm.setPWM(2, 0, positionToPulseServo(0));
-  pwm.setPWM(3, 0, positionToPulseServo(0));
-  pwm.setPWM(4, 0, positionToPulseServo(0));
+  pwm.writeMicroseconds(0, positionToPulseMotor(0));
+  pwm.writeMicroseconds(1, positionToPulseMotor(0));
+  pwm.writeMicroseconds(2, positionToPulseMotor(0));
+  pwm.writeMicroseconds(3, positionToPulseMotor(0));
   delay(100);  // Give servos time to settle
 }
