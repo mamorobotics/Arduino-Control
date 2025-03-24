@@ -91,6 +91,10 @@ void loop() {
     }
     
   }
+
+  for (int i = 0; i < String_Count; i++) {
+    data[i] = "";
+  }
 }
 
 void assignValues() {
@@ -144,10 +148,10 @@ void resetButtonBools() {
 }
 
 void setServosAndMotors() {
-  float fl = constrain((LeftJoystickY + LeftJoystickX), -1.0, 1.0);
-  float fr = constrain((LeftJoystickY - LeftJoystickX), -1.0, 1.0);
-  float ul = RightJoystickY;
-  float ur = RightJoystickY;
+  float fl = constrain((LeftJoystickY + RightJoystickX), -1.0, 1.0);
+  float fr = constrain((LeftJoystickY - RightJoystickX), -1.0, 1.0);
+  float ul = constrain((RightJoystickY + LeftBumper * 0.1), -1.0, 1.0);
+  float ur = constrain((RightJoystickY + RightBumper * 0.1), -1.0, 1.0);
   //fl=1.0;
 
   // positionToPulseMotor(ur);
