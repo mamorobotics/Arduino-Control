@@ -44,6 +44,8 @@ int motMinPWM = 1220;
 int motMaxPWM = 1780;
 int serMinPWM = 184;
 int serMaxPWM = 430;
+int pumpMinPWM = 1460;
+int pumpMaxPWM = 1540;
 
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
@@ -158,10 +160,11 @@ void setServosAndMotors() {
   // positionToPulseMotor(ul);
   // positionToPulseMotor(fr);
   // positionToPulseMotor(fl);
-  pwm.writeMicroseconds(0, positionToPulseMotor(fl));
-  pwm.writeMicroseconds(1, positionToPulseMotor(ur));
-  pwm.writeMicroseconds(2, positionToPulseMotor(ul));
-  pwm.writeMicroseconds(3, positionToPulseMotor(fr));
+  pwm.writeMicroseconds(3, positionToPulse(fl, motMaxPWM, motMinPWM));
+  pwm.writeMicroseconds(2, positionToPulse(ur, motMaxPWM, motMinPWM));
+  pwm.writeMicroseconds(0, positionToPulse(ul, motMaxPWM, motMinPWM));
+  pwm.writeMicroseconds(1, positionToPulse(fr, motMaxPWM, motMinPWM));
+  pwm.writeMicroseconds(4, positionToPulse(A? 1.0: B? -1.0: 0, motMaxPWM, motMinPWM));
 }
 
 void splitString(String str, char delimiter, String *result) {
@@ -188,20 +191,21 @@ uint16_t positionToPulseServo(float position) {
   return serMinPWM + (uint16_t)(position * (serMaxPWM - serMinPWM));
 }
 
-uint16_t positionToPulseMotor(float position) {
+uint16_t positionToPulse(float position, float max, float min) {
   position = constrain(position, -1.0, 1.0);
   Serial.print(position);
   Serial.print(" ");
   float normalized = (position + 1.0) / 2.0;
-  uint16_t micro = motMinPWM + (uint16_t)(normalized * (motMaxPWM - motMinPWM));
+  uint16_t micro = min + (uint16_t)(normalized * (max - min));
   Serial.println(micro);
   return micro;
 }
 
 void setServosToZero() {
-  pwm.writeMicroseconds(0, positionToPulseMotor(0));
-  pwm.writeMicroseconds(1, positionToPulseMotor(0));
-  pwm.writeMicroseconds(2, positionToPulseMotor(0));
-  pwm.writeMicroseconds(3, positionToPulseMotor(0));
+  pwm.writeMicroseconds(0, positionToPulse(0, motMaxPWM, motMinPWM));
+  pwm.writeMicroseconds(1, positionToPulse(0, motMaxPWM, motMinPWM));
+  pwm.writeMicroseconds(2, positionToPulse(0, motMaxPWM, motMinPWM));
+  pwm.writeMicroseconds(3, positionToPulse(0, motMaxPWM, motMinPWM));
+  pwm.writeMicroseconds(4, positionToPulse(0, motMaxPWM, motMinPWM));
   delay(100);  // Give servos time to settle
 }
