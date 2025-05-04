@@ -154,17 +154,17 @@ void setServosAndMotors() {
   float fr = constrain((LeftJoystickY - RightJoystickX), -1.0, 1.0);
   float ul = constrain((RightJoystickY + LeftBumper * 0.1), -1.0, 1.0);
   float ur = constrain((RightJoystickY + RightBumper * 0.1), -1.0, 1.0);
-  //fl=1.0;
+  float pump = A ? 1.0 : B ? -1.0 : 0.0;
+  float claw = RightTrigger ? 1.0 : 0.0;
 
-  // positionToPulseMotor(ur);
-  // positionToPulseMotor(ul);
-  // positionToPulseMotor(fr);
-  // positionToPulseMotor(fl);
+  pwm.writeMicroseconds(5, positionToPulseServo(claw));
+  pwm.writeMicroseconds(6, positionToPulseServo(1 - claw));
+
   pwm.writeMicroseconds(3, positionToPulse(fl, motMaxPWM, motMinPWM));
   pwm.writeMicroseconds(2, positionToPulse(ur, motMaxPWM, motMinPWM));
   pwm.writeMicroseconds(0, positionToPulse(ul, motMaxPWM, motMinPWM));
   pwm.writeMicroseconds(1, positionToPulse(fr, motMaxPWM, motMinPWM));
-  pwm.writeMicroseconds(4, positionToPulse(A? 1.0: B? -1.0: 0, motMaxPWM, motMinPWM));
+  pwm.writeMicroseconds(4, positionToPulse(pump, motMaxPWM, motMinPWM));
 }
 
 void splitString(String str, char delimiter, String *result) {
@@ -206,6 +206,9 @@ void setServosToZero() {
   pwm.writeMicroseconds(1, positionToPulse(0, motMaxPWM, motMinPWM));
   pwm.writeMicroseconds(2, positionToPulse(0, motMaxPWM, motMinPWM));
   pwm.writeMicroseconds(3, positionToPulse(0, motMaxPWM, motMinPWM));
-  pwm.writeMicroseconds(4, positionToPulse(0, motMaxPWM, motMinPWM));
-  delay(100);  // Give servos time to settle
+  pwm.writeMicroseconds(4, 1500);
+  delay(4000);  // Give servos time to settle
+  pwm.writeMicroseconds(4, 1780);
+  delay(1000);
+  pwm.writeMicroseconds(4, 1500);
 }
