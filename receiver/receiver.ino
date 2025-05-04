@@ -42,8 +42,8 @@ bool Right = false;
 
 int motMinPWM = 1220;
 int motMaxPWM = 1780;
-int serMinPWM = 184;
-int serMaxPWM = 430;
+int serMinPWM = 553;
+int serMaxPWM = 2520;
 int pumpMinPWM = 1460;
 int pumpMaxPWM = 1540;
 
@@ -155,10 +155,10 @@ void setServosAndMotors() {
   float ul = constrain((RightJoystickY + LeftBumper * 0.1), -1.0, 1.0);
   float ur = constrain((RightJoystickY + RightBumper * 0.1), -1.0, 1.0);
   float pump = A ? 1.0 : B ? -1.0 : 0.0;
-  float claw = RightTrigger ? 1.0 : 0.0;
+  float claw = RightTrigger ? 0.86 : 0.14;
 
   pwm.writeMicroseconds(5, positionToPulseServo(claw));
-  pwm.writeMicroseconds(6, positionToPulseServo(1 - claw));
+  pwm.writeMicroseconds(7, positionToPulseServo(1.0 - claw));
 
   pwm.writeMicroseconds(3, positionToPulse(fl, motMaxPWM, motMinPWM));
   pwm.writeMicroseconds(2, positionToPulse(ur, motMaxPWM, motMinPWM));
@@ -207,6 +207,8 @@ void setServosToZero() {
   pwm.writeMicroseconds(2, positionToPulse(0, motMaxPWM, motMinPWM));
   pwm.writeMicroseconds(3, positionToPulse(0, motMaxPWM, motMinPWM));
   pwm.writeMicroseconds(4, 1500);
+  pwm.writeMicroseconds(5, positionToPulseServo(0.5));
+  pwm.writeMicroseconds(7, positionToPulseServo(0.5));
   delay(4000);  // Give servos time to settle
   pwm.writeMicroseconds(4, 1780);
   delay(1000);
