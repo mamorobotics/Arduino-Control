@@ -90,50 +90,28 @@ void loop() {
       for(uint8_t i=0; i<lens[lastSentIndex]; i++){
         Serial.write((char)bufs[lastSentIndex][i]);
       }
-      //Serial.write(buf[lastSentIndex], len[lastSentIndex]);
       lastSentIndex++;
       lastSentIndex = lastSentIndex == 3 ? 0 : lastSentIndex;
       Serial.write('~');
     }
   }
 
-    // if(firstController){
-    //   uint8_t data[] = "S";
-    //   rf95.send(data, sizeof(data));
-    //   //rf95.waitPacketSent();
-    //   firstController = false;
-    //   delay(1000);
-    // }
-
   if (rf95.available()) {
     uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
     uint8_t len = sizeof(buf);
-    //Serial.println("Got Radio Data");
-    // Check if data was received
-    if (rf95.recv(buf, &len)) {
-      // Serial.println("Message received!");
-      // Serial.print("RSSI: ");
-      // Serial.println(rf95.lastRssi(), DEC);
-      Serial.write(buf, len);
-      Serial.println();
-      //Print the received message
-      // Serial.print("Message: ");
-      // for (uint8_t i = 0; i < len; i++) {
-      //   Serial.print((char)buf[i]);
-      // }
-      // Serial.println();
-      // memcpy(bufs[lastReceivedIndex], buf, len);
-      // lens[lastReceivedIndex] = len;
-      // Serial.write(bufs[lastReceivedIndex], lens[lastReceivedIndex]);
-      // Serial.println();
-      // lastReceivedIndex++;
-      // lastReceivedIndex = lastReceivedIndex == 3 ? 0 : lastReceivedIndex;
-      //Serial.print((char)buf[0]);
-    } else {
-      //Serial.println("Receive failed");
+    // if (rf95.recv(buf, &len)) {
+    //   Serial.write(buf, len);
+    //   Serial.println();
+    // }
+    
+
+    //Serial.write('~')
+    rf95.recv(buf, &len);
+
+    for (int i = 0; i < len; i++) {
+      Serial.print((char)buf[i]); // Or Serial.print(buf[i], HEX);
     }
-  }else{
-    //Serial.println("No Radio Data");
+    Serial.println();
+    Serial.println("~");
   }
-  //delay(50);
 }
