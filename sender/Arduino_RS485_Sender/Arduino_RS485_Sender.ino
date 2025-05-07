@@ -99,19 +99,21 @@ void loop() {
   if (rf95.available()) {
     uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
     uint8_t len = sizeof(buf);
-    // if (rf95.recv(buf, &len)) {
-    //   Serial.write(buf, len);
-    //   Serial.println();
-    // }
+    if (rf95.recv(buf, &len)) {
+      Serial.write(buf, len);
+      Serial.println();
+      Serial.write('~');
+      Serial.println();
+    }
     
 
     //Serial.write('~')
-    rf95.recv(buf, &len);
+    // rf95.recv(buf, &len);
 
-    for (int i = 0; i < len; i++) {
-      Serial.print((char)buf[i]); // Or Serial.print(buf[i], HEX);
-    }
-    Serial.println();
-    Serial.println("~");
+    // for (int i = 0; i < len; i++) {
+    //   Serial.print((char)buf[i]); // Or Serial.print(buf[i], HEX);
+    // }
+    // Serial.println();
+    // Serial.println("~");
   }
 }
