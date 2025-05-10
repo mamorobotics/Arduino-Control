@@ -154,7 +154,7 @@ void setServosAndMotors() {
   float fr = constrain((LeftJoystickY - RightJoystickX), -1.0, 1.0);
   float ul = constrain((RightJoystickY + LeftBumper * 0.1), -1.0, 1.0);
   float ur = constrain((RightJoystickY + RightBumper * 0.1), -1.0, 1.0);
-  float pump = A ? 1.0 : B ? -1.0 : 0.0;
+  float pump = A ? 1.0 : B ? -1.0 : 0.01;
   float claw = RightTrigger ? 0.86 : 0.14;
 
   pwm.writeMicroseconds(5, positionToPulseServo(claw));
@@ -193,6 +193,12 @@ uint16_t positionToPulseServo(float position) {
 
 uint16_t positionToPulse(float position, float max, float min) {
   position = constrain(position, -1.0, 1.0);
+  if (position <= 0.01 && position >= 0) {
+    position = 0.01;
+  }
+  if (position >= -0.01 && position < 0) {
+    position = -0.01;
+  }
   Serial.print(position);
   Serial.print(" ");
   float normalized = (position + 1.0) / 2.0;
