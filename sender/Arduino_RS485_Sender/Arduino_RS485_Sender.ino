@@ -3,7 +3,7 @@
 #include <RH_RF95.h>
 #include <avr/wdt.h>
 
-const int baudrate = 9600;
+const int baudrate = 31250;
 
 const int RS_RO = 5;
 const int RS_DI = 3;
@@ -34,8 +34,8 @@ void setup() {
   MCUSR = 0;
   wdt_disable();
 
-  Serial.begin(9600);
-  RS_Master.begin(9600);
+  Serial.begin(baudrate);
+  RS_Master.begin(baudrate);
   pinMode(RS_DE_RE, OUTPUT);
 
   digitalWrite(RS_DE_RE, HIGH);

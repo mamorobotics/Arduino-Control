@@ -47,14 +47,16 @@ int serMaxPWM = 2520;
 int pumpMinPWM = 1460;
 int pumpMaxPWM = 1540;
 
+int baudrate = 31250;
+
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
 #define SERVO_FREQ 400 //50  // Analog servos run at ~50 Hz
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(baudrate);
   Serial.println("BOOT");
-  RS_SLAVE.begin(9600);
+  RS_SLAVE.begin(baudrate);
   pinMode(RS_DE_RE, OUTPUT);
   digitalWrite(RS_DE_RE, LOW);
   Serial.flush();
@@ -74,7 +76,7 @@ void loop() {
     if (c == '<') {
       inMsg = true;
     } else if (c == '>') {
-      //Serial.println(msg);
+      Serial.println(msg);
       splitString(msg, '!', data);
       // Serial.print("[");
       // for (int i = 0; i < String_Count; i++) {
@@ -157,8 +159,10 @@ void setServosAndMotors() {
   float pump = A ? 1.0 : B ? -1.0 : 0.01;
   float claw = RightTrigger ? 0.86 : 0.14;
 
-  pwm.writeMicroseconds(5, positionToPulseServo(claw));
-  pwm.writeMicroseconds(7, positionToPulseServo(1.0 - claw));
+  
+
+  pwm.writeMicroseconds(8, positionToPulseServo(claw));
+  pwm.writeMicroseconds(9, positionToPulseServo(1.0 - claw));
 
   pwm.writeMicroseconds(3, positionToPulse(fl, motMaxPWM, motMinPWM));
   pwm.writeMicroseconds(2, positionToPulse(ur, motMaxPWM, motMinPWM));
