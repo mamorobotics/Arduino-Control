@@ -47,11 +47,21 @@ int serMaxPWM = 2520;
 int pumpMinPWM = 1460;
 int pumpMaxPWM = 1540;
 
+int FLpin = 12;
+int URpin = 14;
+int ULpin = 11;
+int FRpin = 15;
+int ClawLpin = 8;
+int ClawRpin = 9;
+float MaxClaw = 0.85;
+float MinClaw = 0.16;
+
+
 int baudrate = 31250;
 
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
-#define SERVO_FREQ 400 //50  // Analog servos run at ~50 Hz
+#define SERVO_FREQ 50 //50  // Analog servos run at ~50 Hz
 
 void setup() {
   Serial.begin(baudrate);
@@ -64,7 +74,7 @@ void setup() {
   Serial.println("READY");
 
   pwm.begin();
-  // pwm.setOscillatorFrequency(27000000);  // Set the PWM frequency
+  pwm.setOscillatorFrequency(27000000);  // Set the PWM frequency
   pwm.setPWMFreq(SERVO_FREQ);
 
   setServosToZero();
@@ -157,18 +167,30 @@ void setServosAndMotors() {
   float ul = constrain((RightJoystickY + LeftBumper * 0.1), -1.0, 1.0);
   float ur = constrain((RightJoystickY + RightBumper * 0.1), -1.0, 1.0);
   float pump = A ? 1.0 : B ? -1.0 : 0.01;
-  float claw = RightTrigger ? 0.86 : 0.14;
+  uint16_t testThing = X ? 1600 : 1500;
+  float claw = RightTrigger ? MaxClaw : MinClaw;
+  
+  
+  // float fl = A ? 0.2 : 0;
+  // float fr = B ? 0.2 : 0;
+  // float ul = X ? 0.2 : 0;
+  // float ur = Y ? 0.2 : 0;
+  
 
   
 
-  pwm.writeMicroseconds(8, positionToPulseServo(claw));
-  pwm.writeMicroseconds(9, positionToPulseServo(1.0 - claw));
+  pwm.writeMicroseconds(ClawLpin, positionToPulseServo(claw));
+  pwm.writeMicroseconds(ClawRpin, positionToPulseServo(1.0 - claw));
 
-  pwm.writeMicroseconds(3, positionToPulse(fl, motMaxPWM, motMinPWM));
-  pwm.writeMicroseconds(2, positionToPulse(ur, motMaxPWM, motMinPWM));
-  pwm.writeMicroseconds(0, positionToPulse(ul, motMaxPWM, motMinPWM));
-  pwm.writeMicroseconds(1, positionToPulse(fr, motMaxPWM, motMinPWM));
-  pwm.writeMicroseconds(4, positionToPulse(pump, motMaxPWM, motMinPWM));
+  //pwm.writeMicroseconds(11, testThing);
+
+  pwm.writeMicroseconds(FLpin, positionToPulse(fl, motMaxPWM, motMinPWM));
+  pwm.writeMicroseconds(URpin, positionToPulse(ur, motMaxPWM, motMinPWM));
+  pwm.writeMicroseconds(ULpin, positionToPulse(ul, motMaxPWM, motMinPWM));
+  pwm.writeMicroseconds(FRpin, positionToPulse(fr, motMaxPWM, motMinPWM));
+
+  
+  //pwm.writeMicroseconds(4, positionToPulse(pump, motMaxPWM, motMinPWM));
 }
 
 void splitString(String str, char delimiter, String *result) {
@@ -212,15 +234,14 @@ uint16_t positionToPulse(float position, float max, float min) {
 }
 
 void setServosToZero() {
-  pwm.writeMicroseconds(0, positionToPulse(0, motMaxPWM, motMinPWM));
-  pwm.writeMicroseconds(1, positionToPulse(0, motMaxPWM, motMinPWM));
-  pwm.writeMicroseconds(2, positionToPulse(0, motMaxPWM, motMinPWM));
-  pwm.writeMicroseconds(3, positionToPulse(0, motMaxPWM, motMinPWM));
-  pwm.writeMicroseconds(4, 1500);
-  pwm.writeMicroseconds(5, positionToPulseServo(0.5));
-  pwm.writeMicroseconds(7, positionToPulseServo(0.5));
+  pwm.writeMicroseconds(FLpin, positionToPulse(0, motMaxPWM, motMinPWM));
+  pwm.writeMicroseconds(URpin, positionToPulse(0, motMaxPWM, motMinPWM));
+  pwm.writeMicroseconds(ULpin, positionToPulse(0, motMaxPWM, motMinPWM));
+  pwm.writeMicroseconds(FRpin, positionToPulse(0, motMaxPWM, motMinPWM));
+
+
+  pwm.writeMicroseconds(ClawLpin, positionToPulseServo(0.5));
+  pwm.writeMicroseconds(ClawRpin, positionToPulseServo(0.5));
   delay(4000);  // Give servos time to settle
-  pwm.writeMicroseconds(4, 1780);
   delay(1000);
-  pwm.writeMicroseconds(4, 1500);
 }
